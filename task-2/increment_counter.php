@@ -16,12 +16,14 @@ function value_from_config(string $key)
  */
 function increment_counter()
 {
-    $file = fopen(value_from_config(‘increment_counter_file’), 'c+b');
+    $file = fopen(value_from_config('increment_counter_file'), 'c+b');
+    // wait for lock
     flock($file, LOCK_EX);
     $count = (int)fgets($file) + 1;
     rewind($file);
     ftruncate($file, 0);
     fwrite($file, $count);
+    // release lock
     flock($file, LOCK_UN);
     fclose($file);
 }
